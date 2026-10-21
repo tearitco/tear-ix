@@ -1,0 +1,46 @@
+# TEAR-IX Custom Packages
+
+These are packages that TEAR-IX excludes (all Ubuntu default branding) or
+includes (custom TEAR-IX branding packages).
+
+## Excluded (Ubuntu branding)
+
+```
+ubuntu-desktop
+ubuntu-session
+ubuntu-settings
+gdm3
+gnome-shell
+gnome-session
+gnome-terminal
+yaru-theme-gtk
+yaru-theme-icon
+yaru-theme-sound
+ubiquity
+```
+
+## Included (TEAR-IX)
+
+Custom packages built from `packages/`:
+
+```
+tear-ix-branding          # Logo, themes, GRUB splash
+tear-ix-plymouth-theme    # Boot splash with RPG animation
+tear-ix-wallpapers        # Fantasy-themed wallpapers
+```
+
+## Core packages
+
+```
+busybox
+busybox-init
+linux-image-generic
+grub-efi-amd64
+grub-pc
+vim-tiny
+nano
+curl
+wget
+openssh-client
+ca-certificates
+```

@@ -1,0 +1,14 @@
+# TEAR-IX Branding Package Control File
+# This goes in packages/tear-ix-branding/DEBIAN/control
+
+Package: tear-ix-branding
+Version: 00.00
+Architecture: all
+Maintainer: tear-it co <build@tear-ix.dev>
+Description: TEAR-IX branding assets (logo, themes, wallpapers)
+ Replaces: yaru-theme-gtk, yaru-theme-icon, yaru-theme-sound
+ Conflicts: ubuntu-branding, yaru-theme-gtk, yaru-theme-icon
+ Provides: tear-ix-branding
+
+# TEAR-IX ; by tear-it co
+# Color scheme: Gold (#FFCC00), Crimson (#DC143C), Tan (#D2B48C), Purple (#9370DB)

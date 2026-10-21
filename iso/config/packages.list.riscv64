@@ -1,0 +1,10 @@
+# TEAR-IX RISC-V Package List
+# Packages that differ for the RISC-V port
+
+# Remove x86-specific
+# - grub-pc, grub-efi-amd64 (x86 only)
+
+# Add RISC-V specific
+grub-efi-riscv64
+linux-image-generic
+gcc-riscv64-linux-gnu

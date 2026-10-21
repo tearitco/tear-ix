@@ -1,0 +1,24 @@
+# Build artifacts
+iso/build/
+riscv/build/
+iso/tear-ix-jammy-amd64.iso
+iso/tear-ix-jammy-amd64.hybrid.iso*
+iso/binary/
+iso/*.iso
+iso/.build/
+
+# SquashFS and image artifacts
+iso/live/filesystem.squashfs
+iso/live/filesystem.size
+
+# rvemu build artifacts
+riscv/stubs/*.o
+riscv/stubs/*.elf
+riscv/output/
+
+# Temp files
+iso/chroot/
+iso/logs/
+*.log
+*.tmp
+build/

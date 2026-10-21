@@ -1,0 +1,65 @@
+# TEAR-IX Package List for live-build
+# These packages replace Ubuntu's default desktop with a lite BusyBox setup
+
+# Core
+busybox
+busybox-init
+busybox-static
+util-linux
+procps
+sysvinit-utils
+
+# Base system
+base-files
+base-passwd
+bash
+dash
+coreutils
+diffutils
+findutils
+grep
+gzip
+sed
+tar
+xz-utils
+
+# Editors
+vim-tiny
+nano
+
+# Networking
+iproute2
+net-tools
+dhcpcd5
+openssh-client
+ca-certificates
+curl
+wget
+dnsutils
+
+# Utilities
+less
+tmux
+screen
+rsync
+udev
+pciutils
+usbutils
+
+# Filesystems
+e2fsprogs
+dosfstools
+xfsprogs
+
+# Compression
+bzip2
+zstd
+
+# Build tools (for on-system compilation)
+make
+gcc
+binutils
+patch
+
+# Firmware
+linux-firmware

@@ -1,0 +1,10 @@
+# TEAR-IX Binary Package List (for live-build binary stage)
+# Packages installed into the binary/live image
+
+grub-efi-amd64
+grub-efi-amd64-bin
+grub-pc
+grub-pc-bin
+xorriso
+syslinux
+syslinux-efi

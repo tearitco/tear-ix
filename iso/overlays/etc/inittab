@@ -1,0 +1,25 @@
+# TEAR-IX Init Configuration (BusyBox init)
+# Placed at /etc/inittab in the ISO chroot
+
+# TEAR-IX ; by tear-it co - BusyBox init
+
+# System initialization
+::sysinit:/etc/init.d/rcS
+
+# Serial console
+::respawn:telnetd -p 23 -l /bin/sh
+
+# Console terminals (getty)
+tty1::respawn:/sbin/getty -L 38400 tty1 vt100
+tty2::respawn:/sbin/getty -L 38400 tty2 vt100
+tty3::respawn:/sbin/getty -L 38400 tty3 vt100
+
+# Serial console
+::respawn:/sbin/getty -L 115200 ttyS0 vt100
+
+# Shutdown
+::shutdown:killall klogd syslogd
+::shutdown:/sbin/umount -a -r
+
+# Restart the init process on exit
+::restart:/sbin/init

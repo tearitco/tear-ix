@@ -1,0 +1,37 @@
+{
+  "$schema": "https://app.kilo.ai/config.json",
+  "permission": {
+    "bash": {
+      "make *": "allow",
+      "cd *": "allow",
+      "git *": "allow",
+      "ls *": "allow",
+      "find *": "allow",
+      "cp *": "allow",
+      "cat *": "allow",
+      "sudo *": "allow",
+      "lb *": "allow",
+      "./scripts/*": "allow",
+      "live-build *": "allow",
+      "grub-mkrescue *": "allow",
+      "xorriso *": "allow",
+      "debootstrap *": "allow",
+      "mksquashfs *": "allow",
+      "qemu-system-x86_64 *": "allow",
+      "qemu-system-riscv64 *": "allow",
+      "gcc *": "allow",
+      "riscv64-unknown-elf-gcc *": "allow",
+      "riscv64-linux-gnu-gcc *": "allow",
+      "echo *": "allow",
+      "which *": "allow",
+      "file *": "allow",
+      "mount *": "allow",
+      "umount *": "allow"
+    },
+    "external_directory": {
+      "/home/jb/Desktop/ele-desk+cal/1.RVEM/*": "allow",
+      "/tmp/kilo/*": "allow",
+      "/tmp/tearix_work/*": "allow"
+    }
+  }
+}

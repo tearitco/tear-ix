@@ -1,0 +1,39 @@
+# TEAR-IX SVG Logo
+# Vector logo - circular shield/seal design with the TEAR-IX monogram
+# Colors: Gold (#FFCC00), Crimson (#DC143C), Tan (#D2B48C), Purple (#9370DB)
+
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Outer shield shape (purple) -->
+  <path d="M256 16 L480 96 V240 C480 384 392 480 256 512 C120 480 32 384 32 240 V96 Z"
+        fill="#9370DB" stroke="#6A5ACD" stroke-width="4"/>
+
+  <!-- Inner border (tan parchment) -->
+  <path d="M256 32 L464 96 V232 C464 368 384 464 256 496 C128 464 48 368 48 232 V96 Z"
+        fill="#D2B48C" stroke="#CD853F" stroke-width="2"/>
+
+  <!-- Gold sunburst background -->
+  <circle cx="256" cy="256" r="80" fill="#FFCC00"/>
+
+  <!-- Crimson inner circle -->
+  <circle cx="256" cy="256" r="56" fill="#DC143C"/>
+
+  <!-- TI monogram (white) -->
+  <text x="256" y="285" text-anchor="middle" font-family="serif" font-size="112" font-weight="bold" fill="#FFFFFF">TI</text>
+
+  <!-- Fairy dust sparkles (gold) -->
+  <circle cx="180" cy="180" r="4" fill="#FFD700"/>
+  <circle cx="330" cy="170" r="3" fill="#FFD700"/>
+  <circle cx="170" cy="340" r="3" fill="#FFD700"/>
+  <circle cx="340" cy="340" r="4" fill="#FFD700"/>
+  <circle cx="256" cy="120" r="3" fill="#FFD700"/>
+
+  <!-- Bottom banner (tan) -->
+  <rect x="100" y="380" width="312" height="48" rx="8" fill="#D2B48C" stroke="#8B4513" stroke-width="2"/>
+
+  <!-- Banner text -->
+  <text x="256" y="410" text-anchor="middle" font-family="serif" font-size="20" font-weight="bold" fill="#DC143C">tear-ix</text>
+  <text x="256" y="432" text-anchor="middle" font-family="serif" font-size="16" fill="#9370DB">by tear-it co</text>
+
+  <!-- Quill detail at bottom -->
+  <path d="M200 462 Q256 500 312 462" stroke="#D2B48C" stroke-width="3" fill="none"/>
+</svg>

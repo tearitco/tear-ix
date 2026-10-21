@@ -1,0 +1,28 @@
+TEAR-IX Licensing
+
+This project is licensed under the following terms:
+
+## TEAR-IX Branding and Code
+The TEAR-IX custom branding, logo, themes, boot scripts, and build scripts
+are original work by "tear-it co" and are licensed under the MIT License.
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND.
+
+## Ubuntu Base
+The underlying Ubuntu 22.04 (Jammy Jellyfish) base system retains its original
+licensing (Ubuntu Community Terms). TEAR-IX redistributes Ubuntu components
+in accordance with Ubuntu's licensing policies.
+
+## RVLV_EMUL Components
+The RISC-V stubs in riscv/stubs/ are adapted from RVLV_EMUL and remain under
+their original license (AGPL v3 for rvemu components, see ../1.RVEM/RVLV_EMUL/LICENSE).

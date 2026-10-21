@@ -1,0 +1,51 @@
+# TEAR-IX boot script for BusyBox init
+# Placed at /etc/init.d/rcS in the ISO chroot
+
+#!/bin/sh
+# TEAR-IX ; by tear-it co - System boot script
+
+echo ""
+echo "============================================================"
+echo "  ╔════════════════════════════════════════════════════╗"
+echo "  ║          🛡️  TEAR-IX  tear-ix ; by tear-it co 🛡️           ║"
+echo "  ║          Version 00.00 - Jammy Jellyfish              ║"
+echo "  ╚════════════════════════════════════════════════════╝"
+echo "============================================================"
+echo ""
+
+# Mount filesystems
+mount -t proc proc /proc
+mount -t sysfs sysfs /sys
+mount -t devtmpfs devtmpfs /dev
+mount -t tmpfs tmpfs /run
+
+# Create device nodes if devtmpfs not available
+[ -c /dev/console ] || mknod /dev/console c 5 1
+[ -c /dev/null ] || mknod /dev/null c 1 3
+[ -c /dev/tty0 ] || mknod /dev/tty0 c 4 0
+[ -c /dev/tty1 ] || mknod /dev/tty1 c 4 1
+[ -c /dev/ttyS0 ] || mknod /dev/ttyS0 c 4 64
+
+# Start syslog
+syslogd -C 64
+
+# Set hostname
+echo "tear-ix" > /etc/hostname
+hostname tear-ix
+
+# Set MOTD
+cat > /etc/motd << 'MOTD'
+  ╔════════════════════════════════════════════════╗
+  ║   🛡️  TEAR-IX v00.00 ; by tear-it co          ║
+  ║   A lite Ubuntu 22.04 Jammy Jelly remix        ║
+  ║   Boot: $(date)                             ║
+  ╚════════════════════════════════════════════════╝
+MOTD
+
+# Network (if available)
+dhclient 2>/dev/null || udhcpc -q 2>/dev/null || true
+
+echo ""
+echo "  Boot complete. Welcome to TEAR-IX."
+echo "  Type 'help' for available commands."
+echo ""

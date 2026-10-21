@@ -1,0 +1,14 @@
+# TEAR-IX Logo (ASCII art for console)
+# Colors: Gold (#FFCC00), Crimson (#DC143C), Tan (#D2B48C), Purple (#9370DB)
+
+  ╔══════════════════════════════════════════════════════════════╗
+  ║                                                              ║
+  ║     🛡️  TEAR-IX                                           ║
+  ║                                                              ║
+  ║      tear-ix ; by tear-it co                                ║
+  ║                                                              ║
+  ║     Version 00.00  |  Jammy Jellyfish                        ║
+  ║                                                              ║
+  ║     A lite Ubuntu 22.04 remix with RPG fantasy theming       ║
+  ║                                                              ║
+  ╚══════════════════════════════════════════════════════════════╝
