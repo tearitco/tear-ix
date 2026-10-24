@@ -1,127 +1,96 @@
 # TEAR-IX ISO Build Guide
 
-## Overview
-
-The ISO is built using `live-build` (Debian/Ubuntu's official live image build tool).
-It produces a hybrid ISO that is UEFI-bootable on x86_64.
-
 ## Prerequisites
 
+No `sudo` access is available. The build uses:
+- `genisoimage` (instead of xorriso) for ISO creation
+- `grub-mkimage` (instead of grub-mkrescue) for EFI binary creation
+- `mkfs.fat` + Python script for FAT ESP image creation
+- `qemu-system-x86_64` + `OVMF.fd` for UEFI testing
+
+## UEFI x86_64 ISO Build Process
+
+### 1. Kernel and Initrd
+
+Download a Jammy kernel package:
 ```bash
-sudo apt-get install -y live-build grub-efi-amd64-bin grub-pc-bin \
-    xorriso squashfs-tools rsync
+apt-get download linux-image-5.15.0-198-generic
+dpkg-deb -x linux-image-*.deb /tmp/kernel-extract
+cp /tmp/kernel-extract/boot/vmlinuz-* live/vmlinuz
 ```
 
-## Build Steps
-
-### 1. Configure the build
-
+For the initrd, either use the Ubuntu generated initrd or create a minimal one:
 ```bash
-cd iso/
-lb config \
-    --distribution jammy \
-    --architecture amd64 \
-    --binary-images iso-hybrid \
-    --bootloader grub \
-    --archive-areas "main restricted universe multiverse" \
-    --security true \
-    --debian-installer false \
-    --memtest none \
-    --archive-areas "main restricted universe multiverse"
+# Minimal busybox initrd (POC)
+mkdir -p initramfs/{bin,sbin,dev,etc,proc,sys}
+cp /usr/bin/busybox initramfs/bin/
+# Create init script with TEAR-IX branding
+# ... see riscv/scripts/build_riscv_initramfs.sh for pattern
+find initramfs | cpio -H newc -o > live/initrd
 ```
 
-### 2. Run the build
+### 2. GRUB EFI Binary
 
+Build GRUB EFI application with embedded early config:
 ```bash
-make iso        # from project root
-# or:
-cd iso && sudo lb build
+# Early config: search for ISO and load grub.cfg
+cat > /tmp/grub-early.cfg << 'EOF'
+search --set=iso -l TEARIXJAMMY
+set root=$iso
+configfile /boot/grub/grub.cfg
+EOF
+
+grub-mkimage \
+    -c /tmp/grub-early.cfg \
+    -o EFI/BOOT/BOOTX64.EFI \
+    -O x86_64-efi \
+    -p /boot/grub \
+    part_msdos iso9660 fat ext2 search configfile linux linuxefi test loopback normal
 ```
 
-### 3. Output
+### 3. FAT ESP Image
 
-The ISO is produced at `iso/build/tear-ix_jammy-amd64.iso`.
+Create a FAT16 ESP containing the GRUB EFI binary:
+```bash
+# Create base filesystem
+dd if=/dev/zero of=esp.img bs=1M count=16
+mkfs.fat -F 16 -n TEARIXESP esp.img
 
-## Build Configuration
-
-| Setting | Value | Notes |
-|---------|-------|-------|
-| Distribution | jammy (Ubuntu 22.04) | Pinned to Jammy Jellyfish |
-| Architecture | amd64 | x86_64 target |
-| Bootloader | grub-efi | UEFI + legacy BIOS hybrid |
-| Init system | BusyBox | systemd replaced |
-| Package list | `iso/config/packages.list` | Minimal set |
-
-## Package Selection
-
-Core packages (in `iso/config/packages.list`):
-
-```
-busybox-init
-busybox-static
-vim-tiny
-nano
-curl
-wget
-openssh-client
-ca-certificates
-udev
-dhcpcd5
+# Inject EFI/BOOT/BOOTX64.EFI using Python script
+python3 scripts/build_esp.py EFI/BOOT/BOOTX64.EFI esp.img
 ```
 
-All Ubuntu branding packages are excluded:
-```
-- ubuntu-desktop
-- ubuntu-session
-- gdm3
-- gnome-shell
-```
-
-## Customization Hooks
-
-Live-build hooks in `iso/hooks/` run during the build:
-
-| Hook | Purpose |
-|------|---------|
-| `0001-branding.chroot` | Install TEAR-IX branding files |
-| `0002-busybox-init.chroot` | Configure BusyBox as init |
-| `0003-grub.chroot` | Install custom GRUB theme |
-| `0004-cleanup.chroot` | Remove unnecessary files, shrink image |
-
-## Overlay Files
-
-Filesystem overlays live in `iso/overlays/`:
-
-```
-overlays/
-├── etc/           # Custom /etc (inittab, fstab, hosts, hostname)
-├── usr/           # Custom /usr (logo, theme files)
-└── var/           # Custom /var (log dirs, etc.)
-```
-
-## Boot Parameters
-
-The GRUB configuration uses these boot args (mirroring RVLV's approach):
-
-```
-console=ttyS0 console=tty0
-earlycon
-root=/dev/sr0
-ro
-init=/sbin/init    (BusyBox init)
-```
-
-## Testing the ISO
+### 4. ISO Creation
 
 ```bash
-# Verify ISO structure
-./iso/scripts/test_iso.sh
-
-# Boot in QEMU (UEFI)
-qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd \
-    -cdrom iso/build/tear-ix_jammy-amd64.iso \
-    -m 2G
-
-# Boot in QEMU (legacy BIOS)
-qemu-system-x86_64 -cdrom iso/build/tear-ix_jammy-amd64.iso -m 2G
+genisoimage \
+    -J -r -V "TEARIXJAMMY" \
+    -A "TEAR-IX Live" \
+    -e tear-ix_esp.img \
+    -no-emul-boot \
+    iso-root/
 ```
+
+### 5. Testing
+
+```bash
+qemu-system-x86_64 \
+    -bios /usr/share/ovmf/OVMF.fd \
+    -cdrom tear-ix.iso \
+    -m 1G -serial stdio -nographic
+```
+
+## Key Technical Notes
+
+- The ESP volume label must differ from the ISO volume label to avoid device conflicts
+- `grub-mkimage` (not `grub-mkstandalone`) is used to embed an early config via `-c`
+- The `linuxefi` module provides EFI-compatible kernel loading
+- The `initrd` command is available via the `normal` module
+
+## Working Build
+
+The POC UEFI ISO boots successfully:
+1. OVMF loads ESP from El Torita EFI boot entry
+2. GRUB EFI runs with TEAR-IX branded menu
+3. GRUB loads kernel and initrd from ISO9660 filesystem
+4. Kernel boots and initramfs runs TEAR-IX init script

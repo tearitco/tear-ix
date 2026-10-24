@@ -31,7 +31,7 @@ fi
 
 # Test 3: rvemu binary exists
 echo -n "Test 3: rvemu binary... "
-if [ -f "${RISCV_DIR}/../1.RVEM/RVLV_EMUL/build/main" ]; then
+if [ -f "${RISCV_DIR}/../../1.RVEM/RVLV_EMUL/build/main" ]; then
     echo "PASS"
 else
     echo "FAIL (build rvemu first)"

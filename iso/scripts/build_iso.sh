@@ -1,97 +1,59 @@
-#!/usr/bin/env bash
-# build_iso.sh - Build the TEAR-IX x86_64 UEFI ISO using live-build
-set -euo pipefail
+#!/bin/bash
+set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ISO_DIR="$(dirname "$SCRIPT_DIR")"
-PROJECT_ROOT="$(dirname "$ISO_DIR")"
+ISO_ROOT="$SCRIPT_DIR/../build/iso-root"
+BUILD_DIR="$SCRIPT_DIR/../build"
 
-echo "=== TEAR-IX.00.00 ISO Build ==="
-echo "Project root: ${PROJECT_ROOT}"
-echo ""
+# Create ISO directory structure
+mkdir -p "$ISO_ROOT/EFI/BOOT" "$ISO_ROOT/live" "$ISO_ROOT/boot/grub"
 
-# Check for live-build
-if ! command -v lb &>/dev/null; then
-    echo "ERROR: live-build (lb) is not installed."
-    echo "Install: sudo apt-get install -y live-build"
-    exit 1
+# Build GRUB EFI binary
+"$SCRIPT_DIR/build_efi.sh"
+
+# Copy kernel and initrd to live directory
+# Kernel from downloaded package or local build
+if [ -f "$BUILD_DIR/vmlinuz" ]; then
+    cp "$BUILD_DIR/vmlinuz" "$ISO_ROOT/live/vmlinuz"
+fi
+if [ -f "$BUILD_DIR/initrd" ]; then
+    cp "$BUILD_DIR/initrd" "$ISO_ROOT/live/initrd"
 fi
 
-# Check for required tools
-for tool in grub-efi-amd64-bin grub-pc-bin xorriso squashfs-tools mksquashfs; do
-    if ! command -v "$tool" &>/dev/null 2>&1; then
-        echo "WARNING: ${tool} not found. Build may fail."
-    fi
-done
+# Create grub.cfg for the ISO
+cat > "$ISO_ROOT/boot/grub/grub.cfg" << 'GRUBCFG'
+set timeout=10
+set default=0
+terminal_output console
+set color_normal="light-gray/dark-gray"
+set menu_color_normal="light-gray/dark-gray"
+set menu_color_highlight="yellow/blue"
 
-# Clean previous build
-echo "Cleaning previous build..."
-sudo rm -rf "${ISO_DIR}/binary" "${ISO_DIR}/chroot" "${ISO_DIR}/.build"
-rm -rf "${ISO_DIR}/build"
-mkdir -p "${ISO_DIR}/build"
+menuentry "TEAR-IX Live - Boot (tear-ix ; by tear-it co)" {
+    search --set=root -l TEARIXJAMMY
+    linux /live/vmlinuz init=/sbin/init console=ttyS0,115200n8 console=tty0
+    initrd /live/initrd
+}
 
-# Run lb config
-echo "Configuring live-build..."
-cd "${ISO_DIR}"
-sudo lb config \
-    --distribution jammy \
-    --architecture amd64 \
-    --binary-images iso-hybrid \
-    --bootloader grub \
-    --memtest none \
-    --debian-installer false \
-    --security true \
-    --updates true \
-    --backports true \
-    --archive-areas "main restricted universe multiverse" \
-    --linux-flavour generic \
-    --linux-packages "linux-image-generic"
+menuentry "TEAR-IX Live - Reboot" {
+    reboot
+}
 
-# Copy package lists
-echo "Copying package lists..."
-cp "${ISO_DIR}/package-lists/"*.list* "${ISO_DIR}/config/" 2>/dev/null || true
-cp "${ISO_DIR}/package-lists/"*.packages "${ISO_DIR}/config/" 2>/dev/null || true
+menuentry "TEAR-IX Live - Halt" {
+    halt
+}
+GRUBCFG
 
-# Run hooks (they are in iso/hooks/)
-# live-build expects hooks in config/hooks/ as numbered scripts
-echo "Setting up hooks..."
-for hook in "${ISO_DIR}/hooks/"*.chroot; do
-    [ -f "$hook" ] && cp "$hook" "${ISO_DIR}/config/hooks/" 2>/dev/null || true
-done
+# Build ESP image
+python3 "$SCRIPT_DIR/build_esp.py" "$ISO_ROOT/EFI/BOOT/BOOTX64.EFI" "$ISO_ROOT/tear-ix_esp.img"
 
-# Copy overlays
-echo "Setting up filesystem overlays..."
-if [ -d "${ISO_DIR}/overlays" ]; then
-    cp -r "${ISO_DIR}/overlays/etc/"* "${ISO_DIR}/config/includes.chroot/etc/" 2>/dev/null || true
-    cp -r "${ISO_DIR}/overlays/usr/"* "${ISO_DIR}/config/includes.chroot/usr/" 2>/dev/null || true
-    cp -r "${ISO_DIR}/overlays/var/"* "${ISO_DIR}/config/includes.chroot/var/" 2>/dev/null || true
-fi
+# Create ISO with genisoimage (El Torita EFI boot entry)
+genisoimage \
+    -o "$BUILD_DIR/tear-ix.iso" \
+    -J -r -V "TEARIXJAMMY" \
+    -A "TEAR-IX Live" \
+    -e tear-ix_esp.img \
+    -no-emul-boot \
+    "$ISO_ROOT/" 2>&1
 
-# Install branding
-echo "Installing branding assets..."
-"${ISO_DIR}/scripts/install_branding.sh" "${ISO_DIR}"
-
-# Build
-echo ""
-echo "Building ISO (this may take 10-30 minutes)..."
-sudo lb build
-
-# Move output
-if [ -f "${ISO_DIR}/tearix_jammy-amd64.iso" ]; then
-    mv "${ISO_DIR}/tearix_jammy-amd64.iso" "${ISO_DIR}/build/tear-ix_jammy-amd64.iso"
-    echo ""
-    echo "=== ISO built successfully ==="
-    echo "Output: ${ISO_DIR}/build/tear-ix_jammy-amd64.iso"
-    ls -lh "${ISO_DIR}/build/tear-ix_jammy-amd64.iso"
-elif [ -f "binary.iso" ]; then
-    mv binary.iso "${ISO_DIR}/build/tear-ix_jammy-amd64.iso"
-    echo ""
-    echo "=== ISO built successfully ==="
-    echo "Output: ${ISO_DIR}/build/tear-ix_jammy-amd64.iso"
-    ls -lh "${ISO_DIR}/build/tear-ix_jammy-amd64.iso"
-else
-    echo "ERROR: ISO not found after build"
-    echo "Checking for any .iso files..."
-    find . -name "*.iso" -type f 2>/dev/null
-    exit 1
-fi
+echo "[build_iso] ISO created: $BUILD_DIR/tear-ix.iso"

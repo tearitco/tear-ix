@@ -1,0 +1,68 @@
+# TEAR-IX Server/Headless Variant Package List
+# Terminal-only, BusyBox init, server-focused
+
+# Core system
+busybox
+busybox-init
+busybox-static
+util-linux
+procps
+sysvinit-utils
+base-files
+base-passwd
+bash
+dash
+coreutils
+diffutils
+findutils
+grep
+gzip
+sed
+tar
+xz-utils
+
+# Editors
+vim-tiny
+nano
+
+# Networking
+iproute2
+net-tools
+dhcpcd5
+openssh-server
+openssh-client
+ca-certificates
+curl
+wget
+dnsutils
+iptables
+
+# Server utilities
+less
+tmux
+screen
+rsync
+udev
+pciutils
+usbutils
+sudo
+
+# Filesystems
+e2fsprogs
+dosfstools
+xfsprogs
+
+# Compression
+bzip2
+zstd
+
+# Build tools
+make
+gcc
+binutils
+patch
+
+# Firmware
+linux-firmware
+
+# No GUI packages in server variant

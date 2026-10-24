@@ -1,0 +1,28 @@
+#ifndef MEMMAP_H
+#define MEMMAP_H
+
+#include <stdint.h>
+
+#define MROM_BASE      0x00001000ULL
+#define MROM_SIZE      0x0000F000ULL
+#define TEST_BASE      0x00100000ULL
+#define TEST_SIZE      0x00001000ULL
+#define CLINT_BASE     0x02000000ULL
+#define CLINT_SIZE     0x00010000ULL
+#define PLIC_BASE      0x0C000000ULL
+#define PLIC_SIZE      0x00400000ULL
+#define UART_BASE      0x10000000ULL
+#define UART_SIZE      0x00000100ULL
+#define VIRTIO_BASE    0x10001000ULL
+#define VIRTIO_SIZE    0x00001000ULL
+#define DRAM_BASE      0x80000000ULL
+
+#define UART_IRQ       10
+#define VIRTIO_IRQ     1
+
+#define PAGE_SIZE      4096ULL
+
+#define DEFAULT_DRAM_MIB 128ULL
+#define MAX_DRAM_MIB     2048ULL
+
+#endif

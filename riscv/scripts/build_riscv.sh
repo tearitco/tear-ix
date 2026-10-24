@@ -4,7 +4,11 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 RISCV_DIR="$(dirname "$SCRIPT_DIR")"
-RVEMU_DIR="${RISCV_DIR}/../1.RVEM/RVLV_EMUL"
+RVEMU_DIR="${RISCV_DIR}/../../1.RVEM/RVLV_EMUL"
+# Resolve relative to script location (TEAR-IX -> ../1.RVEM/RVLV_EMUL)
+if [ ! -d "$RVEMU_DIR" ]; then
+    RVEMU_DIR="$(cd "${RISCV_DIR}/../../1.RVEM/RVLV_EMUL" 2>/dev/null && pwd)"
+fi
 
 echo "=== TEAR-IX RISC-V Port Build ==="
 echo ""
