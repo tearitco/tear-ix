@@ -25,13 +25,19 @@ cat > "$ISO_ROOT/boot/grub/grub.cfg" << 'GRUBCFG'
 set timeout=10
 set default=0
 terminal_output console
+
 set color_normal="light-gray/dark-gray"
 set menu_color_normal="light-gray/dark-gray"
 set menu_color_highlight="yellow/blue"
 
+insmod part_msdos
+insmod iso9660
+insmod search
+insmod configfile
+
 menuentry "TEAR-IX Live - Boot (tear-ix ; by tear-it co)" {
     search --set=root -l TEARIXJAMMY
-    linux /live/vmlinuz init=/sbin/init console=ttyS0,115200n8 console=tty0
+    linux /live/vmlinuz root=/dev/ram0 rw init=/init console=ttyS0,115200n8
     initrd /live/initrd
 }
 

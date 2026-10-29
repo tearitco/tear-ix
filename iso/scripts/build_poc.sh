@@ -36,10 +36,19 @@ for applet in sh ls cat echo mount umount mkdir rmdir chmod chown ps df env prin
     ln -sf busybox "$applet"
 done
 
-# TEAR-IX init script
-cat > "${POC_DIR}/tearix/sbin/init" << 'INIT'
+# TEAR-IX init script (at /init for kernel direct use)
+cat > "${POC_DIR}/tearix/init" << 'INIT'
 #!/bin/sh
 PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
+mount -t proc proc /proc 2>/dev/null || true
+mount -t sysfs sysfs /sys 2>/dev/null || true
+
+[ -c /dev/console ] || mknod /dev/console c 5 1
+[ -c /dev/null ] || mknod /dev/null c 1 3
+[ -c /dev/tty0 ] || mknod /dev/tty0 c 4 0
+[ -c /dev/ttyS0 ] || mknod /dev/ttyS0 c 4 64
 
 GOLD='\033[0;33m'
 CRIMSON='\033[0;31m'
@@ -47,34 +56,29 @@ TAN='\033[0;37m'
 PURPLE='\033[0;35m'
 NC='\033[0m'
 
-mount -t proc proc /proc 2>/dev/null || true
-mount -t sysfs sysfs /sys 2>/dev/null || true
-mount -t devtmpfs devtmpfs /dev 2>/dev/null || true
+printf "${PURPLE}  ============================================================\n${NC}"
+printf "${PURPLE}  |                                                          |\n${NC}"
+printf "${GOLD}  |     TEAR-IX                                              |\n${NC}"
+printf "${PURPLE}  |                                                          |\n${NC}"
+printf "${CRIMSON}  |      tear-ix ; by tear-it co                            |\n${NC}"
+printf "${PURPLE}  |                                                          |\n${NC}"
+printf "${GOLD}  |     Version 00.00  |  Jammy Jellyfish                    |\n${NC}"
+printf "${PURPLE}  |                                                          |\n${NC}"
+printf "${TAN}  |     A lite Ubuntu 22.04 remix (RPG fantasy themed)       |\n${NC}"
+printf "${PURPLE}  |                                                          |\n${NC}"
+printf "${PURPLE}  ============================================================\n${NC}"
+printf "\n"
+printf "${CRIMSON}  Boot complete. Welcome to TEAR-IX.\n${NC}"
+printf "${GOLD}  root@tear-ix:~ ${NC}\n"
+printf "\n"
 
-[ -c /dev/console ] || mknod /dev/console c 5 1
-[ -c /dev/null ] || mknod /dev/null c 1 3
-[ -c /dev/tty0 ] || mknod /dev/tty0 c 4 0
-[ -c /dev/ttyS0 ] || mknod /dev/ttyS0 c 4 64
-
-echo ""
-echo -e "${PURPLE}  ============================================================${NC}"
-echo -e "${PURPLE}  |                                                          |${NC}"
-echo -e "${GOLD}  |     TEAR-IX                                              |${NC}"
-echo -e "${PURPLE}  |                                                          |${NC}"
-echo -e "${CRIMSON}  |      tear-ix ; by tear-it co                            |${NC}"
-echo -e "${PURPLE}  |                                                          |${NC}"
-echo -e "${GOLD}  |     Version 00.00  |  Jammy Jellyfish                    |${NC}"
-echo -e "${PURPLE}  |                                                          |${NC}"
-echo -e "${TAN}  |     A lite Ubuntu 22.04 remix (RPG fantasy themed)       |${NC}"
-echo -e "${PURPLE}  |                                                          |${NC}"
-echo -e "${PURPLE}  ============================================================${NC}"
-echo ""
-echo -e "${CRIMSON}  Boot complete. Welcome to TEAR-IX.${NC}"
-echo -e "${GOLD}  root@tear-ix:~ ${NC}"
-echo ""
-
-exec sh
+exec /bin/busybox sh
 INIT
+chmod +x "${POC_DIR}/tearix/init"
+
+# Also create sbin/init as a wrapper
+echo '#!/bin/sh' > "${POC_DIR}/tearix/sbin/init"
+echo 'exec /init' >> "${POC_DIR}/tearix/sbin/init"
 chmod +x "${POC_DIR}/tearix/sbin/init"
 
 # Minimal etc
@@ -119,7 +123,7 @@ insmod iso9660
 insmod loopback
 
 menuentry "TEAR-IX Live - Boot (tear-ix ; by tear-it co)" {
-    linux /live/vmlinuz root=/dev/ram0 init=/sbin/init console=ttyS0,115200n8 console=tty0
+    linux /live/vmlinuz root=/dev/ram0 rw init=/init console=ttyS0,115200n8
     initrd /live/initrd
 }
 
@@ -146,7 +150,7 @@ grub-mkstandalone \
     --format=x86_64-efi \
     --output="${POC_DIR}/EFI/BOOT/BOOTX64.EFI" \
     -- \
-    "linux /live/vmlinuz root=/dev/ram0 init=/sbin/init console=ttyS0,115200n8 console=tty0" \
+    "linux /live/vmlinuz root=/dev/ram0 rw init=/init console=ttyS0,115200n8" \
     "initrd /live/initrd" \
     "configfile /boot/grub/grub.cfg" 2>&1
 

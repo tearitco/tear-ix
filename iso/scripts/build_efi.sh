@@ -37,7 +37,7 @@ set default=0
 
 menuentry "TEAR-IX Live - Boot (tear-ix ; by tear-it co)" {
     search --set=root -l TEARIXJAMMY
-    linux /live/vmlinuz init=/sbin/init console=ttyS0,115200n8 console=tty0
+    linux /live/vmlinuz root=/dev/ram0 rw init=/init console=ttyS0,115200n8
     initrd /live/initrd
 }
 
