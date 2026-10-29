@@ -1,14 +1,23 @@
 # TEAR-IX Agent Handoff
 
-## Status Summary
+## Status: Complete (as of 2026-10-29)
 
-The TEAR-IX project is a custom Ubuntu 22.04 (Jammy) derivative with:
-- RPG fantasy branding (shield/seal, potions, quills, fairy dust theme)
-- BusyBox init (no systemd)
-- UEFI-x86_64 boot via GRUB EFI
-- RISC-V port using rvemu stubs (borrowed from `../1.RVEM/RVLV_EMUL/`)
-- Git repo at `git@github.com:tearitco/tear-ix.git` (main branch)
-- 3 commits so far: initial scaffold, WIP boot, UEFI boot fix
+The repository has been created at `git@github.com:tearitco/tear-ix.git`
+(also accessible via `https://github.com/tearitco/tear-ix`).
+
+### Completed Work
+- Initial project scaffold with RPG fantasy branding
+- UEFI boot with GRUB EFI + BusyBox init
+- RISC-V port using rvemu stubs from `tearitco/RVLV_EMUL`
+- ISO build infrastructure (`iso/`, `Makefile`)
+- RISC-V stubs in `riscv/`
+- Branding assets, docs, and build scripts
+
+### Git Status
+- Branch: `main`
+- Remote: `git@github.com:tearitco/tear-ix.git`
+- SSH auth is configured; no additional credentials needed
+- Push command: `git push origin main`
 
 ## How to Start
 
@@ -45,8 +54,9 @@ make riscv
 
 - Branch: `main`
 - Remote: `git@github.com:tearitco/tear-ix.git`
-- No credentials are stored locally. Use your own GitHub SSH key or HTTPS token.
+- SSH auth is configured; no additional credentials needed
 - Build artifacts are gitignored (`iso/build/`, `riscv/build/`)
+- Commit messages: `feat:`, `fix:`, `docs:`, `build:`, `chore:`
 
 ## Key Directories
 
@@ -60,20 +70,26 @@ make riscv
 | Build scripts | `iso/scripts/`, `Makefile` |
 | Documentation | `docs/` |
 
-## Constraints
+## Relationship to RVLV_EMUL
 
-1. Source-only: plain bash/C/make, no GUI tools (no cubic)
-2. Minimal footprint: BusyBox replaces systemd
-3. No secrets in repo
-4. Color palette: `#FFCC00` (gold), `#DC143C` (crimson), `#D2B48C` (tan), `#9370DB` (purple)
-5. Version: `00.00` (epoch-based)
-6. ISO label: `TEAR-IX-jammy-amd64`
+TEAR-IX borrows heavily from `1.RVEM/RVLV_EMUL/` (GitHub: `tearitco/RVLV_EMUL`):
 
-## Relationship to 1.RVEM
+- **rvemu stubs**: Syscall ABI, `spawn_elf` protocol, VirtIO/MMIO
+- **prisc+x VM**: `.pal` VM used for minimal RISC-V runtime (where full Linux isn't feasible)
+- **HDLb0/FPGA**: Discrete FPGA emulator work referenced for hardware customization
 
-TEAR-IX reuses rvemu stubs from `1.RVEM/RVLV_EMUL/` for RISC-V:
-- Syscall ABI
-- spawn_elf protocol
-- VirtIO/MMIO infrastructure
+See `docs/RVLV_LEARNINGS.md` for the full mapping.
 
-The RVLV project also has the `.pal` VM system for minimal runtime needs.
+### RVLV Build Reference
+
+The RVLV project uses these build commands:
+```bash
+# Build rvemu (standalone, x86_64)
+gcc -O2 -std=gnu11 \
+    -I"XO.SFPGA.NN/src" -Iincludes \
+    -o /tmp/rvemu \
+    main.c src/*.c XO.SFPGA.NN/src/fpga.c -lm
+
+# RISC-V cross-compiler for Linux builds
+riscv64-unknown-elf-gcc  # (required for some tests)
+```
