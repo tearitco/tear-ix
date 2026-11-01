@@ -70,6 +70,75 @@ make riscv      # Builds RISC-V variant using rvemu stubs
 
 ---
 
+## Boot Proof (QEMU Verified)
+
+The ISO has been verified to boot fully in QEMU with OVMF UEFI firmware. The full boot chain is:
+
+1. **OVMF firmware** loads the El Torita EFI boot entry from the ISO
+2. **GRUB EFI** binary (BOOTX64.EFI) executes, displaying the TEAR-IX branded menu
+3. **GRUB** loads the kernel (`/live/vmlinuz`) and initramfs (`/live/initrd`)
+4. **Kernel** boots with command line: `root=/dev/ram0 rw init=/init console=ttyS0,115200n8`
+5. **Initramfs** unpacks as rootfs, kernel runs `/init`
+6. **TEAR-IX branded welcome** message displays with RPG fantasy color scheme
+7. **BusyBox shell** starts (ash, v1.30.1)
+
+### QEMU Boot Test Command
+
+```bash
+qemu-system-x86_64 \
+    -bios /usr/share/ovmf/OVMF.fd \
+    -cdrom ship/tear-ix_uefi.iso \
+    -m 512M \
+    -display none \
+    -nographic \
+    -no-reboot
+```
+
+### Expected Console Output
+
+```
+GNU GRUB  version 2.06
+...
+*TEAR-IX Live - Boot (tear-ix ; by tear-it co)
+...
+
+[    0.000000] Linux version 5.15.0-198-generic ...
+[    7.494009] Trying to unpack rootfs image as initramfs...
+[   11.948013] Run /init as init process
+
+  ============================================================
+  |                                                          |
+  |     TEAR-IX                                              |
+  |                                                          |
+  |      tear-ix ; by tear-it co                            |
+  |                                                          |
+  |     Version 00.00  |  Jammy Jellyfish                    |
+  |                                                          |
+  |     A lite Ubuntu 22.04 remix (RPG fantasy themed)       |
+  |                                                          |
+  ============================================================
+
+  Boot complete. Welcome to TEAR-IX.
+  root@tear-ix:~ 
+
+BusyBox v1.30.1 (Ubuntu 1:1.30.1-7ubuntu3.1) built-in shell (ash)
+Enter 'help' for a list of built-in commands.
+
+sh: can't access tty; job control turned off
+/ #
+```
+
+### Boot Verification Log
+
+Full kernel boot log captured from QEMU run (60s timeout):
+- Kernel version: 5.15.0-198-generic
+- Initramfs unpacks successfully (2148K freed)
+- `/init` script executes with TEAR-IX branding
+- BusyBox shell starts at `/ #` prompt
+- Console output confirms: `Run /init as init process` → branded banner → BusyBox shell
+
+---
+
 ## Relationship to RVLV_EMUL
 
 This project borrows heavily from the RVLV_EMUL project (`../1.RVEM/RVLV_EMUL/`).
