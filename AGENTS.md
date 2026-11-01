@@ -35,7 +35,8 @@ BusyBox init, UEFI-x86 support, and a RISC-V port reusing rvemu stubs.
 | Command | Description |
 |---------|-------------|
 | `make iso` | Build x86_64 UEFI ISO |
-| `make riscv` | Build/run RISC-V variant on rvemu |
+| `make riscv` | Build RISC-V port using rvemu stubs |
+| `make livfedesk` | Download and build livedesk desktop from TEARIT-HQ |
 | `make clean` | Remove build artifacts |
 | `make all` | Build both variants |
 | `make test` | Run validation checks |

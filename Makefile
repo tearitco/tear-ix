@@ -10,7 +10,7 @@
 VARIANT ?= headless
 export TEAR_IX_VARIANT := $(VARIANT)
 
-.PHONY: all iso riscv clean test help iso-headless iso-gui
+.PHONY: all iso riscv clean test help iso-headless iso-gui livfedesk
 
 # Default: build ISO + RISC-V
 all: iso riscv
@@ -30,6 +30,10 @@ iso-headless:
 
 iso-gui:
 	@cd iso && ./scripts/build_iso.sh gui
+
+# Download and build livedesk desktop from TEARIT-HQ
+livfedesk:
+	@./iso/scripts/install_livfedesk.sh
 
 # Build/run the RISC-V port using rvemu stubs
 riscv:
@@ -61,6 +65,7 @@ help:
 	@echo "  iso-headless - Build headless ISO"
 	@echo "  iso-gui      - Build GUI ISO"
 	@echo "  riscv        - Build/run RISC-V port on rvemu"
+	@echo "  livfedesk    - Download and build livedesk from TEARIT-HQ"
 	@echo "  clean        - Remove build artifacts"
 	@echo "  test         - Run validation tests"
 	@echo "  help         - Show this help"
