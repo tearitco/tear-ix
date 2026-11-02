@@ -92,10 +92,10 @@ TEAR-IX ships three bootable variants, selectable from the GRUB menu:
 | **Desktop** | GUI, XFCE with RPG fantasy theming | `root=/dev/ram0 rw init=/init-gui console=ttyS0,115200n8` |
 | **RISC-V** | RISC-V port using rvemu stubs | `root=/dev/ram0 rw init=/init console=ttyS0,115200n8` |
 
-### QEMU Test Command (No Graphics)
+### QEMU Boot Test Command (No Graphics)
 
 ```bash
-qemu-system-x86_64 \
+timeout 60 qemu-system-x86_64 \
     -bios /usr/share/ovmf/OVMF.fd \
     -cdrom ship/tear-ix_uefi.iso \
     -m 512M \
@@ -107,7 +107,7 @@ qemu-system-x86_64 \
 ### QEMU Test Command (With Graphics)
 
 ```bash
-qemu-system-x86_64 \
+timeout 60 qemu-system-x86_64 \
     -bios /usr/share/ovmf/OVMF.fd \
     -cdrom ship/tear-ix_uefi.iso \
     -m 512M \
