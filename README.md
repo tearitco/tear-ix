@@ -82,6 +82,16 @@ The ISO has been verified to boot fully in QEMU with OVMF UEFI firmware. The ful
 6. **TEAR-IX branded welcome** message displays with RPG fantasy color scheme
 7. **BusyBox shell** starts (ash, v1.30.1)
 
+### Boot Variants
+
+TEAR-IX ships three bootable variants, selectable from the GRUB menu:
+
+| Variant | Description | Kernel cmdline |
+|---------|-------------|----------------|
+| **Server** (default) | Headless, BusyBox init, terminal-only | `root=/dev/ram0 rw init=/init console=ttyS0,115200n8` |
+| **Desktop** | GUI, XFCE with RPG fantasy theming | `root=/dev/ram0 rw init=/init-gui console=ttyS0,115200n8` |
+| **RISC-V** | RISC-V port using rvemu stubs | `root=/dev/ram0 rw init=/init console=ttyS0,115200n8` |
+
 ### QEMU Boot Test Command
 
 ```bash

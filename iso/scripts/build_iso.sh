@@ -34,11 +34,28 @@ insmod part_msdos
 insmod iso9660
 insmod search
 insmod configfile
+insmod linux
+insmod linuxefi
 
-menuentry "TEAR-IX Live - Boot (tear-ix ; by tear-it co)" {
+# TEAR-IX GRUB Menu — choose your variant
+# Colors: Gold (#FFCC00), Crimson (#DC143C), Tan (#D2B48C), Purple (#9370DB)
+
+menuentry "TEAR-IX Live - Server (headless, BusyBox init)" {
     search --set=root -l TEARIXJAMMY
-    linux /live/vmlinuz root=/dev/ram0 rw init=/init console=ttyS0,115200n8
+    linux /live/vmlinuz root=/dev/ram0 rw init=/init console=ttyS0,115200n8 quiet
     initrd /live/initrd
+}
+
+menuentry "TEAR-IX Live - Desktop (GUI, XFCE)" {
+    search --set=root -l TEARIXJAMMY
+    linux /live/vmlinuz root=/dev/ram0 rw init=/init-gui console=ttyS0,115200n8 quiet
+    initrd /live/initrd-gui
+}
+
+menuentry "TEAR-IX Live - RISC-V (rvemu)" {
+    search --set=root -l TEARIXJAMMY
+    linux /live/vmlinuz-rv root=/dev/ram0 rw init=/init console=ttyS0,115200n8 quiet
+    initrd /live/initrd-rv
 }
 
 menuentry "TEAR-IX Live - Reboot" {
