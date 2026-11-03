@@ -168,15 +168,17 @@ The TEAR-IX ISO can be written directly to a USB drive using the included script
 
 ### Install to USB
 
+**Requires root access (sudo).** Run from the TEAR-IX project directory:
+
 ```bash
 # Find your USB device first
 lsblk
 
 # Write TEAR-IX to USB (replaces all data on the drive)
-./iso/scripts/install-tear-ix-usb.sh /dev/sdb
+sudo ./iso/scripts/install-tear-ix-usb.sh /dev/sdb
 
 # With verification
-./iso/scripts/install-tear-ix-usb.sh /dev/sdb --verify
+sudo ./iso/scripts/install-tear-ix-usb.sh /dev/sdb --verify
 ```
 
 Or via Makefile:
