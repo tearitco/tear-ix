@@ -10,7 +10,7 @@
 VARIANT ?= headless
 export TEAR_IX_VARIANT := $(VARIANT)
 
-.PHONY: all iso riscv clean test help iso-headless iso-gui livfedesk
+.PHONY: all iso riscv clean test help iso-headless iso-gui livfedesk usb
 
 # Default: build ISO + RISC-V
 all: iso riscv
@@ -34,6 +34,10 @@ iso-gui:
 # Download and build livedesk desktop from TEARIT-HQ
 livfedesk:
 	@./iso/scripts/install_livfedesk.sh
+
+# Write TEAR-IX ISO to USB drive
+usb:
+	@./iso/scripts/install-tear-ix-usb.sh $(DEVICE) $(VERIFY)
 
 # Build/run the RISC-V port using rvemu stubs
 riscv:

@@ -162,6 +162,41 @@ Full kernel boot log captured from QEMU run (60s timeout):
 
 ---
 
+## USB Installation
+
+The TEAR-IX ISO can be written directly to a USB drive using the included script. This replaces any existing content on the USB.
+
+### Install to USB
+
+```bash
+# Find your USB device first
+lsblk
+
+# Write TEAR-IX to USB (replaces all data on the drive)
+./iso/scripts/install-tear-ix-usb.sh /dev/sdb
+
+# With verification
+./iso/scripts/install-tear-ix-usb.sh /dev/sdb --verify
+```
+
+Or via Makefile:
+```bash
+make usb DEVICE=/dev/sdb
+make usb DEVICE=/dev/sdb VERIFY=--verify
+```
+
+### Boot from USB
+
+1. Insert the USB drive
+2. Boot your machine and enter the firmware/UEFI boot menu (usually F12, Esc, or F2)
+3. Select the USB drive as the boot device
+4. The TEAR-IX GRUB menu will appear with options for:
+   - **Server** (headless, BusyBox init) - default
+   - **Desktop** (GUI, XFCE with RPG fantasy theming)
+   - **RISC-V** (RISC-V port using rvemu stubs)
+
+---
+
 ## Relationship to RVLV_EMUL
 
 This project borrows heavily from the RVLV_EMUL project (`../1.RVEM/RVLV_EMUL/`).

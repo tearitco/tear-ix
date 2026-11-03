@@ -4,8 +4,11 @@ riscv/build/
 iso/tear-ix-jammy-amd64.iso
 iso/tear-ix-jammy-amd64.hybrid.iso*
 iso/binary/
-iso/*.iso
+iso/build/*.iso
 iso/.build/
+
+# Exception: ship/ ISO is the release artifact, not ignored
+!ship/*.iso
 
 # SquashFS and image artifacts
 iso/live/filesystem.squashfs
