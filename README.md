@@ -199,6 +199,49 @@ make usb DEVICE=/dev/sdb VERIFY=--verify
 
 ---
 
+## Minimal Embedded Build
+
+For embedded/CLI use, TEAR-IX can be built as a ~15MB bootable image (vs 38MB for the full ISO). Uses EFI stub kernel (no GRUB) + minimal BusyBox initramfs.
+
+### Build
+
+```bash
+make minimal
+# or:
+./iso/scripts/build_minimal_embedded.sh
+```
+
+### Test
+
+```bash
+make minimal-test
+# or:
+./iso/scripts/test_minimal_embedded.sh
+```
+
+### Expected Output
+
+The minimal image boots directly to a BusyBox shell with TEAR-IX branding. No GRUB menu, no packages — just kernel + BusyBox.
+
+### Size Breakdown
+
+| Component | Size |
+|-----------|------|
+| Kernel (EFI stub) | ~12MB |
+| Initramfs (BusyBox) | ~2MB |
+| ESP image (FAT16) | ~4MB |
+| **Total** | **~15MB** |
+
+### Boot Command
+
+```bash
+qemu-system-x86_64 -bios /usr/share/ovmf/OVMF.fd \
+    -drive file=iso/build/minimal/tear-ix-minimal.img,format=raw \
+    -m 512M -nographic
+```
+
+---
+
 ## Relationship to RVLV_EMUL
 
 This project borrows heavily from the RVLV_EMUL project (`../1.RVEM/RVLV_EMUL/`).

@@ -10,7 +10,7 @@
 VARIANT ?= headless
 export TEAR_IX_VARIANT := $(VARIANT)
 
-.PHONY: all iso riscv clean test help iso-headless iso-gui livfedesk usb
+.PHONY: all iso riscv clean test help iso-headless iso-gui livfedesk usb minimal
 
 # Default: build ISO + RISC-V
 all: iso riscv
@@ -38,6 +38,14 @@ livfedesk:
 # Write TEAR-IX ISO to USB drive
 usb:
 	@./iso/scripts/install-tear-ix-usb.sh $(DEVICE) $(VERIFY)
+
+# Build minimal embedded image (EFI stub, BusyBox CLI, ~15MB)
+minimal:
+	@./iso/scripts/build_minimal_embedded.sh
+
+# Test minimal embedded image
+minimal-test:
+	@./iso/scripts/test_minimal_embedded.sh
 
 # Build/run the RISC-V port using rvemu stubs
 riscv:
