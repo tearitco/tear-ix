@@ -1,4 +1,5 @@
-Duck-ai-image-2026-11-07-07-52.jpeg
+Duck-ai-image-2026-11-07-07-52.jpeg 💿
+💧
 # TEAR-IX - A Custom Ubuntu-Based ISO
 
 **Version:** TEAR-IX.00.00  
